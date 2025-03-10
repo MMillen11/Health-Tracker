@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .test-box {
+            padding: 20px;
+            background-color: #f0f0f0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Test Page</h1>
+    <p>This is a simple test page to verify browser functionality.</p>
+    
+    <div class="test-box">
+        <h2>JavaScript Test</h2>
+        <p>The box below should show "JavaScript is working!" if JavaScript is enabled:</p>
+        <div id="js-test">JavaScript is not working.</div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('js-test').textContent = 'JavaScript is working!';
+            console.log('Test page loaded successfully');
+        });
+    </script>
+</body>
+</html> 
