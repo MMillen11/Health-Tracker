@@ -48,6 +48,33 @@
             border-radius: 3px;
         }
         
+        .chart-header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .chart-icon {
+            margin-bottom: 10px;
+            filter: drop-shadow(0 2px 3px rgba(0,0,0,0.2));
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        .chart-subtitle {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+            margin-top: 5px;
+            font-style: italic;
+        }
+        
         .chart-container {
             height: 450px;
             margin: 30px 0;
@@ -55,6 +82,7 @@
             padding: 20px;
             border-radius: 10px;
             box-shadow: inset 0 0 10px rgba(0,0,0,0.05);
+            animation: fadeIn 0.8s ease;
         }
         
         .button-container {
@@ -145,14 +173,32 @@
             to { opacity: 1; transform: translateY(0); }
         }
         
-        .chart-container {
-            animation: fadeIn 0.8s ease;
+        /* Footer styles */
+        .app-footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+        
+        .footer-tagline {
+            margin-top: 5px;
+            font-style: italic;
+            color: #95a5a6;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Mike's Amazing Health Tracker</h1>
+        
+        <div class="chart-header">
+            <svg class="chart-icon" viewBox="0 0 24 24" width="48" height="48">
+                <path fill="#2ecc71" d="M22,21H2V3H4V19H6V10H10V19H12V6H16V19H18V14H22V21Z" />
+            </svg>
+            <p class="chart-subtitle">Visualize your nutrition data for the last 7 days</p>
+        </div>
         
         <div id="data-status"></div>
         
@@ -176,6 +222,11 @@
             <button onclick="renderChart()">Refresh Chart</button>
         </div>
     </div>
+    
+    <footer class="app-footer">
+        <p>Mike's Amazing Health Tracker &copy; 2023</p>
+        <p class="footer-tagline">Track your health journey with ease</p>
+    </footer>
     
     <script>
         // Function to format date as YYYY-MM-DD
