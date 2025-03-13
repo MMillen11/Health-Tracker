@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Mike's Amazing Health Tracker</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
@@ -511,9 +511,186 @@
             font-style: italic;
             color: #95a5a6;
         }
+        
+        /* Falling food animation styles */
+        #animation-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+            overflow: hidden;
+        }
+        
+        .falling-food {
+            position: absolute;
+            width: 50px; /* Slightly smaller for mobile */
+            height: 50px;
+            object-fit: contain;
+            z-index: 10000;
+            transform: translateY(-100px) rotate(0deg);
+            transition: transform 1.5s cubic-bezier(0.21, 0.98, 0.6, 0.99);
+            filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.3));
+        }
+        
+        /* Responsive adjustments for mobile */
+        @media (max-width: 768px) {
+            .falling-food {
+                width: 40px; /* Even smaller on mobile */
+                height: 40px;
+            }
+            
+            #food-counter {
+                font-size: 14px;
+                padding: 4px 12px;
+            }
+            
+            /* Make test buttons smaller on mobile */
+            .test-button {
+                padding: 4px !important;
+                font-size: 12px !important;
+            }
+        }
+        
+        /* Food splash effect */
+        .splash {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background-image: radial-gradient(circle, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 70%);
+            border-radius: 50%;
+            z-index: 9997;
+            opacity: 0;
+            transform: scale(0);
+            animation: splash 0.6s ease-out forwards;
+        }
+        
+        @keyframes splash {
+            0% { transform: scale(0); opacity: 0.8; }
+            100% { transform: scale(3); opacity: 0; }
+        }
+        
+        /* Food counter styles */
+        #food-counter {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            padding: 5px 15px;
+            font-size: 16px;
+            font-weight: bold;
+            color: #2c3e50;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            z-index: 10001;
+            display: none;
+            transition: all 0.3s ease;
+        }
+        
+        .counter-bump {
+            animation: counterBump 0.3s ease-out;
+        }
+        
+        @keyframes counterBump {
+            0% { transform: translateX(-50%) scale(1); }
+            50% { transform: translateX(-50%) scale(1.2); }
+            100% { transform: translateX(-50%) scale(1); }
+        }
+        
+        /* Celebration effect */
+        .celebration {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            z-index: 9996;
+            opacity: 0;
+            animation: celebrate 1s ease-out forwards;
+        }
+        
+        @keyframes celebrate {
+            0% { transform: scale(0) translateY(0); opacity: 1; }
+            100% { transform: scale(1) translateY(-100px); opacity: 0; }
+        }
+        
+        /* Achievement styles */
+        #achievement {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background-color: rgba(44, 62, 80, 0.9);
+            border-radius: 10px;
+            padding: 20px;
+            color: white;
+            text-align: center;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            z-index: 10002;
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        #achievement h3 {
+            margin-top: 0;
+            color: #f1c40f;
+            font-size: 24px;
+        }
+        
+        #achievement p {
+            margin-bottom: 15px;
+        }
+        
+        #achievement-icon {
+            font-size: 50px;
+            margin-bottom: 10px;
+            animation: spin 2s infinite linear;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .achievement-stars {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 10001;
+        }
+        
+        .achievement-star {
+            position: absolute;
+            background-color: #f1c40f;
+            clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+            opacity: 0;
+            animation: star-fade 2s ease-out forwards;
+        }
+        
+        @keyframes star-fade {
+            0% { transform: scale(0) rotate(0deg); opacity: 1; }
+            100% { transform: scale(1) rotate(360deg); opacity: 0; }
+        }
     </style>
 </head>
 <body>
+    <!-- Animation container for falling foods -->
+    <div id="animation-container">
+        <!-- Removed picnic blanket and basket -->
+        <div id="food-counter">Foods collected: 0</div>
+    </div>
+    
+    <!-- Test buttons for food animation (for debugging) -->
+    <div style="position: fixed; top: 10px; left: 10px; z-index: 10002; display: flex; flex-direction: column; gap: 5px;">
+        <button id="test-apple" class="test-button" style="padding: 5px; background: #e74c3c; color: white; border: none; border-radius: 4px; cursor: pointer;">Test Apple</button>
+        <button id="test-banana" class="test-button" style="padding: 5px; background: #f1c40f; color: white; border: none; border-radius: 4px; cursor: pointer;">Test Banana</button>
+        <button id="test-chicken" class="test-button" style="padding: 5px; background: #3498db; color: white; border: none; border-radius: 4px; cursor: pointer;">Test Chicken</button>
+    </div>
+    
     <div class="container">
         <div class="app-header">
             <h1>Mike's Amazing Health Tracker</h1>
@@ -1639,6 +1816,477 @@
             const day = String(date.getDate()).padStart(2, '0');
             return `${year}-${month}-${day}`;
         }
+        
+        // Food animation functionality
+        const foodImages = {
+            "chicken": "https://cdn-icons-png.flaticon.com/512/1046/1046751.png",
+            "apple": "https://cdn-icons-png.flaticon.com/512/415/415682.png",
+            "banana": "https://cdn-icons-png.flaticon.com/512/2909/2909761.png",
+            "beef": "https://cdn-icons-png.flaticon.com/512/3143/3143643.png",
+            "eggs": "https://cdn-icons-png.flaticon.com/512/837/837560.png",
+            "avacado": "https://cdn-icons-png.flaticon.com/512/1147/1147801.png", 
+            "avocado": "https://cdn-icons-png.flaticon.com/512/1147/1147801.png", // Added both spellings
+            "bread": "https://cdn-icons-png.flaticon.com/512/3014/3014466.png",
+            "brocolli": "https://cdn-icons-png.flaticon.com/512/2909/2909815.png",
+            "broccoli": "https://cdn-icons-png.flaticon.com/512/2909/2909815.png", // Added both spellings
+            "ice cream": "https://cdn-icons-png.flaticon.com/512/3157/3157890.png"
+        };
+        
+        // Track recently dropped foods to prevent duplicates
+        const recentlyDropped = {};
+        
+        // Food counter
+        let foodCount = 0;
+        let counterVisible = false;
+        let counterTimeout;
+        
+        // Track collected food types
+        const collectedFoodTypes = {};
+        
+        function updateFoodCounter() {
+            const counter = document.getElementById('food-counter');
+            counter.textContent = `Foods collected: ${foodCount}`;
+            
+            // Show counter if not visible
+            if (!counterVisible) {
+                counter.style.display = 'block';
+                counterVisible = true;
+            }
+            
+            // Add bump animation
+            counter.classList.add('counter-bump');
+            setTimeout(() => counter.classList.remove('counter-bump'), 300);
+            
+            // Clear previous timeout and set new one
+            clearTimeout(counterTimeout);
+            counterTimeout = setTimeout(() => {
+                counter.style.opacity = '0';
+                setTimeout(() => {
+                    counter.style.display = 'none';
+                    counter.style.opacity = '1';
+                    counterVisible = false;
+                }, 300);
+            }, 5000);
+            
+            // Create celebration effect for milestones
+            if (foodCount % 5 === 0) {
+                createCelebration();
+            }
+            
+            // Check if all food types have been collected
+            checkAllFoodsCollected();
+        }
+        
+        function checkAllFoodsCollected() {
+            // Get unique food types (accounting for spelling variations)
+            const uniqueFoodTypes = new Set();
+            Object.keys(foodImages).forEach(food => {
+                // Skip alternate spellings
+                if (food === "avocado" && collectedFoodTypes["avacado"]) return;
+                if (food === "avacado" && collectedFoodTypes["avocado"]) return;
+                if (food === "broccoli" && collectedFoodTypes["brocolli"]) return;
+                if (food === "brocolli" && collectedFoodTypes["broccoli"]) return;
+                
+                if (collectedFoodTypes[food]) {
+                    uniqueFoodTypes.add(food.replace("avacado", "avocado").replace("brocolli", "broccoli"));
+                }
+            });
+            
+            // Count unique food types (excluding spelling variations)
+            const uniqueFoodCount = uniqueFoodTypes.size;
+            const totalUniqueFoods = new Set(
+                Object.keys(foodImages).map(f => 
+                    f.replace("avacado", "avocado").replace("brocolli", "broccoli")
+                )
+            ).size;
+            
+            // If all food types collected, show achievement
+            if (uniqueFoodCount >= totalUniqueFoods) {
+                showAchievement();
+            }
+        }
+        
+        function createCelebration() {
+            const container = document.getElementById('animation-container');
+            
+            // Create 20 celebration particles
+            for (let i = 0; i < 20; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('celebration');
+                
+                // Random position at the bottom of the screen
+                const randomX = Math.random() * window.innerWidth;
+                const randomY = window.innerHeight - Math.random() * 50;
+                
+                // Random color
+                const colors = ['#e74c3c', '#3498db', '#2ecc71', '#f1c40f', '#9b59b6'];
+                const randomColor = colors[Math.floor(Math.random() * colors.length)];
+                
+                particle.style.left = `${randomX}px`;
+                particle.style.top = `${randomY}px`;
+                particle.style.backgroundColor = randomColor;
+                
+                // Random size
+                const size = 5 + Math.random() * 10;
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                
+                // Random animation duration
+                const duration = 0.5 + Math.random() * 1;
+                particle.style.animationDuration = `${duration}s`;
+                
+                container.appendChild(particle);
+                
+                // Remove after animation
+                setTimeout(() => {
+                    container.removeChild(particle);
+                }, duration * 1000);
+            }
+            
+            // Play celebration sound
+            const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2005/2005-preview.mp3');
+            audio.volume = 0.3;
+            audio.play().catch(e => console.log("Audio play prevented:", e));
+        }
+        
+        function showAchievement() {
+            // Check if achievement already shown
+            if (document.getElementById('achievement')) return;
+            
+            // Create achievement element
+            const achievement = document.createElement('div');
+            achievement.id = 'achievement';
+            achievement.innerHTML = `
+                <div id="achievement-icon">🏆</div>
+                <h3>ACHIEVEMENT UNLOCKED!</h3>
+                <p>Master Chef: Collected all food types!</p>
+                <button id="achievement-close" style="padding: 5px 15px; background-color: #f1c40f; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">AWESOME!</button>
+            `;
+            
+            document.body.appendChild(achievement);
+            
+            // Create star background
+            const stars = document.createElement('div');
+            stars.classList.add('achievement-stars');
+            document.body.appendChild(stars);
+            
+            // Create 50 stars
+            for (let i = 0; i < 50; i++) {
+                setTimeout(() => {
+                    const star = document.createElement('div');
+                    star.classList.add('achievement-star');
+                    
+                    // Random position
+                    const randomX = Math.random() * window.innerWidth;
+                    const randomY = Math.random() * window.innerHeight;
+                    
+                    // Random size
+                    const size = 10 + Math.random() * 20;
+                    
+                    star.style.left = `${randomX}px`;
+                    star.style.top = `${randomY}px`;
+                    star.style.width = `${size}px`;
+                    star.style.height = `${size}px`;
+                    
+                    stars.appendChild(star);
+                    
+                    // Remove after animation
+                    setTimeout(() => {
+                        stars.removeChild(star);
+                    }, 2000);
+                }, i * 100);
+            }
+            
+            // Show achievement with animation
+            setTimeout(() => {
+                achievement.style.transform = 'translate(-50%, -50%) scale(1)';
+            }, 100);
+            
+            // Play achievement sound
+            const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/1010/1010-preview.mp3');
+            audio.volume = 0.4;
+            audio.play().catch(e => console.log("Audio play prevented:", e));
+            
+            // Close button
+            setTimeout(() => {
+                document.getElementById('achievement-close').addEventListener('click', () => {
+                    achievement.style.transform = 'translate(-50%, -50%) scale(0)';
+                    setTimeout(() => {
+                        document.body.removeChild(achievement);
+                        document.body.removeChild(stars);
+                    }, 500);
+                });
+            }, 500);
+        }
+        
+        function createFallingFood(foodType) {
+            console.log("Creating falling food:", foodType);
+            
+            // Prevent duplicate drops of the same food within 1 second
+            if (recentlyDropped[foodType]) {
+                console.log("Skipping duplicate drop of:", foodType);
+                return;
+            }
+            recentlyDropped[foodType] = true;
+            setTimeout(() => { recentlyDropped[foodType] = false; }, 1000);
+            
+            const container = document.getElementById('animation-container');
+            if (!container) {
+                console.error("Animation container not found!");
+                return;
+            }
+            
+            // Create food element
+            const foodImg = document.createElement('img');
+            foodImg.src = foodImages[foodType.toLowerCase()];
+            console.log("Food image source:", foodImg.src);
+            foodImg.classList.add('falling-food');
+            foodImg.alt = foodType;
+            
+            // Get viewport dimensions - use this instead of window.innerWidth for better mobile support
+            const viewportWidth = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
+            const viewportHeight = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0);
+            
+            // Random horizontal position across the whole screen - adjusted for viewport
+            const randomX = Math.random() * (viewportWidth - 80) + 40; // Keep away from edges on mobile
+            const randomRotation = Math.random() * 360;
+            foodImg.style.left = `${randomX}px`;
+            
+            // Add to container
+            container.appendChild(foodImg);
+            console.log("Food element added to container");
+            
+            // Start animation after a small delay
+            setTimeout(() => {
+                // Calculate final position at the bottom of the screen - adjusted for viewport
+                const finalY = viewportHeight - 40; // 40px from bottom for mobile
+                
+                console.log("Animation parameters:", { randomX, finalY });
+                
+                // Apply animation
+                foodImg.style.transform = `translateY(${finalY}px) rotate(${randomRotation}deg)`;
+                console.log("Applied transform:", foodImg.style.transform);
+                
+                // Create splash and celebration effect when food lands
+                setTimeout(() => {
+                    // Increment food counter
+                    foodCount++;
+                    
+                    // Mark this food type as collected
+                    collectedFoodTypes[foodType] = true;
+                    
+                    updateFoodCounter();
+                    
+                    // Create splash effect
+                    const splash = document.createElement('div');
+                    splash.classList.add('splash');
+                    splash.style.left = `${randomX}px`;
+                    splash.style.bottom = `30px`; // Fixed position from bottom
+                    container.appendChild(splash);
+                    
+                    // Play a soft landing sound - only if not mobile or if user has interacted
+                    const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3');
+                    audio.volume = 0.2;
+                    
+                    // Check if we can play audio (many mobile browsers block autoplay)
+                    if (window.navigator.userActivation && window.navigator.userActivation.hasBeenActive) {
+                        audio.play().catch(e => console.log("Audio play prevented:", e));
+                    } else {
+                        console.log("Audio autoplay may be blocked on mobile");
+                    }
+                    
+                    // Remove splash after animation
+                    setTimeout(() => container.removeChild(splash), 600);
+                    
+                    // Remove food after landing
+                    setTimeout(() => {
+                        foodImg.style.transition = 'opacity 0.5s ease-out, transform 0.5s ease-out';
+                        foodImg.style.opacity = 0;
+                        foodImg.style.transform = `translateY(${finalY + 10}px) rotate(${randomRotation}deg) scale(0.8)`;
+                        
+                        setTimeout(() => {
+                            container.removeChild(foodImg);
+                        }, 500);
+                    }, 200);
+                }, 1500);
+            }, 50);
+        }
+        
+        // Reset food counter when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log("DOM loaded, initializing food animation feature");
+            foodCount = 0;
+            
+            // Reset collected food types
+            Object.keys(foodImages).forEach(food => {
+                collectedFoodTypes[food] = false;
+            });
+            
+            // Hook into the food input field
+            const foodInput = document.getElementById('food-name');
+            console.log("Food input element:", foodInput);
+            
+            if (foodInput) {
+                // Function to check for food keywords in input
+                function checkForFoods(inputValue) {
+                    console.log("Checking for foods in:", inputValue);
+                    const value = inputValue.toLowerCase().trim();
+                    
+                    // Check for exact matches first
+                    Object.keys(foodImages).forEach(food => {
+                        const foodLower = food.toLowerCase();
+                        
+                        // Check if the input exactly matches a food
+                        if (value === foodLower) {
+                            console.log("Exact match found for:", food);
+                            createFallingFood(food);
+                            return;
+                        }
+                        
+                        // Check if the input contains the food as a whole word
+                        const regex = new RegExp(`\\b${foodLower}\\b`, 'i');
+                        if (regex.test(value)) {
+                            createFallingFood(food);
+                            return;
+                        }
+                        
+                        // Check if the input ends with the food
+                        if (value.endsWith(foodLower) && 
+                            (value.length === foodLower.length || value[value.length - foodLower.length - 1] === ' ')) {
+                            createFallingFood(food);
+                            return;
+                        }
+                        
+                        // Check if the input starts with the food
+                        if (value.startsWith(foodLower) && 
+                            (value.length === foodLower.length || value[foodLower.length] === ' ')) {
+                            createFallingFood(food);
+                            return;
+                        }
+                    });
+                }
+                
+                // Add input event listener with debounce
+                let inputTimeout;
+                foodInput.addEventListener('input', function(e) {
+                    clearTimeout(inputTimeout);
+                    inputTimeout = setTimeout(() => {
+                        checkForFoods(e.target.value);
+                    }, 300); // 300ms debounce
+                });
+                
+                // Also check on blur to catch final entry
+                foodInput.addEventListener('blur', function(e) {
+                    checkForFoods(e.target.value);
+                });
+                
+                // Add a small tooltip to hint at the feature
+                const tooltip = document.createElement('div');
+                tooltip.style.fontSize = '12px';
+                tooltip.style.color = '#7f8c8d';
+                tooltip.style.marginTop = '5px';
+                tooltip.style.fontStyle = 'italic';
+                tooltip.textContent = 'Try typing foods like "chicken", "apple", or "banana"...';
+                
+                // Insert tooltip after the food input
+                foodInput.parentNode.insertBefore(tooltip, foodInput.nextSibling);
+                
+                // Hide tooltip after 10 seconds
+                setTimeout(() => {
+                    tooltip.style.transition = 'opacity 1s ease';
+                    tooltip.style.opacity = '0';
+                    setTimeout(() => tooltip.remove(), 1000);
+                }, 10000);
+            } else {
+                console.error("Food input element not found! Expected element with id 'food-name'");
+            }
+            
+            // Add test buttons for direct animation testing
+            const testApple = document.getElementById('test-apple');
+            const testBanana = document.getElementById('test-banana');
+            const testChicken = document.getElementById('test-chicken');
+            
+            // Helper function to add both click and touch events
+            function addTouchAndClickEvent(element, handler) {
+                if (!element) return;
+                
+                // Add click event
+                element.addEventListener('click', handler);
+                
+                // Add touch events for mobile
+                element.addEventListener('touchstart', function(e) {
+                    e.preventDefault(); // Prevent default touch behavior
+                    handler(e);
+                });
+            }
+            
+            // Add events to test buttons
+            addTouchAndClickEvent(testApple, function() {
+                console.log("Test apple button activated");
+                createFallingFood('apple');
+            });
+            
+            addTouchAndClickEvent(testBanana, function() {
+                console.log("Test banana button activated");
+                createFallingFood('banana');
+            });
+            
+            addTouchAndClickEvent(testChicken, function() {
+                console.log("Test chicken button activated");
+                createFallingFood('chicken');
+            });
+            
+            console.log("Test buttons initialized with touch support");
+            
+            // Add a reset button for the food counter but make it hidden
+            const resetButton = document.createElement('button');
+            resetButton.textContent = 'Reset Food Counter';
+            resetButton.style.position = 'fixed';
+            resetButton.style.bottom = '20px';
+            resetButton.style.right = '20px';
+            resetButton.style.padding = '5px 10px';
+            resetButton.style.backgroundColor = '#e74c3c';
+            resetButton.style.color = 'white';
+            resetButton.style.border = 'none';
+            resetButton.style.borderRadius = '4px';
+            resetButton.style.cursor = 'pointer';
+            resetButton.style.fontSize = '12px';
+            resetButton.style.zIndex = '10001';
+            resetButton.style.opacity = '0'; /* Hide the button */
+            resetButton.style.pointerEvents = 'none'; /* Disable interactions */
+            resetButton.style.transition = 'opacity 0.3s ease';
+            
+            // Add both touch and click events to the reset button
+            addTouchAndClickEvent(resetButton, () => {
+                foodCount = 0;
+                updateFoodCounter();
+                
+                // Show a quick message
+                const message = document.createElement('div');
+                message.textContent = 'Counter reset!';
+                message.style.position = 'fixed';
+                message.style.bottom = '60px';
+                message.style.right = '20px';
+                message.style.padding = '5px 10px';
+                message.style.backgroundColor = 'rgba(0,0,0,0.7)';
+                message.style.color = 'white';
+                message.style.borderRadius = '4px';
+                message.style.fontSize = '12px';
+                message.style.zIndex = '10002';
+                
+                document.body.appendChild(message);
+                
+                setTimeout(() => {
+                    message.style.transition = 'opacity 0.5s ease';
+                    message.style.opacity = '0';
+                    setTimeout(() => message.remove(), 500);
+                }, 1500);
+            });
+            
+            document.body.appendChild(resetButton);
+        });
+        
+        // ... existing script continues ...
     </script>
 </body>
 </html> 
