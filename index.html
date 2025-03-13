@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Mike's Amazing Health Tracker</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
@@ -39,25 +39,6 @@
             border-radius: 10px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
             color: white;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .app-header::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
-            animation: shimmer 10s infinite linear;
-            pointer-events: none;
-        }
-        
-        @keyframes shimmer {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
         }
         
         .app-header h1 {
@@ -103,70 +84,6 @@
             font-size: 0.8rem;
             color: rgba(255,255,255,0.7);
             margin-top: 10px;
-        }
-        
-        .section-header {
-            display: flex;
-            align-items: center;
-            margin-top: 30px;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #eee;
-        }
-        
-        .section-header h2 {
-            margin: 0 0 0 10px;
-            padding: 0;
-            border: none;
-        }
-        
-        .section-icon {
-            width: 32px;
-            height: 32px;
-            margin-right: 5px;
-        }
-        
-        .category-icons {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 15px;
-            margin-bottom: 15px;
-            justify-content: center;
-        }
-        
-        .category-icon {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            width: 80px;
-            text-align: center;
-            font-size: 0.8rem;
-            color: #7f8c8d;
-            transition: transform 0.3s ease, color 0.3s ease;
-            cursor: pointer;
-        }
-        
-        .category-icon:hover {
-            transform: translateY(-8px);
-            color: #2c3e50;
-        }
-        
-        .category-icon svg {
-            width: 40px;
-            height: 40px;
-            margin-bottom: 5px;
-            padding: 8px;
-            background-color: #f5f5f5;
-            border-radius: 50%;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
-        }
-        
-        .category-icon:hover svg {
-            transform: scale(1.1);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-            background-color: #fff;
         }
         
         h2 {
@@ -237,29 +154,6 @@
         
         button:active {
             transform: translateY(0);
-        }
-        
-        #save-btn {
-            background: linear-gradient(135deg, #27ae60, #2ecc71);
-            margin-top: 20px;
-            animation: pulse 2s infinite;
-        }
-        
-        #save-btn:hover {
-            animation: none;
-            background: linear-gradient(135deg, #219653, #27ae60);
-        }
-        
-        @keyframes pulse {
-            0% {
-                box-shadow: 0 0 0 0 rgba(46, 204, 113, 0.4);
-            }
-            70% {
-                box-shadow: 0 0 0 10px rgba(46, 204, 113, 0);
-            }
-            100% {
-                box-shadow: 0 0 0 0 rgba(46, 204, 113, 0);
-            }
         }
         
         .history {
@@ -511,9 +405,209 @@
             font-style: italic;
             color: #95a5a6;
         }
+        
+        /* Falling food animation styles */
+        #animation-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+            overflow: hidden;
+        }
+        
+        .falling-food {
+            position: absolute;
+            width: 50px; /* Slightly smaller for mobile */
+            height: 50px;
+            object-fit: contain;
+            z-index: 10000;
+            transform: translateY(-100px) rotate(0deg);
+            transition: transform 2.5s cubic-bezier(0.21, 0.98, 0.6, 0.99);
+            filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.3));
+        }
+        
+        /* Responsive adjustments for mobile */
+        @media (max-width: 768px) {
+            .falling-food {
+                width: 40px; /* Even smaller on mobile */
+                height: 40px;
+            }
+            
+            #food-counter {
+                font-size: 14px;
+                padding: 4px 12px;
+            }
+            
+            /* Make test buttons smaller on mobile */
+            .test-button {
+                padding: 4px !important;
+                font-size: 12px !important;
+            }
+            
+            /* Improve List View on mobile */
+            table {
+                font-size: 0.8rem;
+            }
+            
+            th, td {
+                padding: 8px 4px;
+            }
+            
+            /* Use a more compact layout for the history table on mobile */
+            #history-list-tab table {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+                -webkit-overflow-scrolling: touch;
+            }
+            
+            /* Make delete button smaller on mobile */
+            .delete-button {
+                padding: 4px 8px;
+                font-size: 0.7rem;
+            }
+        }
+        
+        /* Food splash effect */
+        .splash {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background-image: radial-gradient(circle, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 70%);
+            border-radius: 50%;
+            z-index: 9997;
+            opacity: 0;
+            transform: scale(0);
+            animation: splash 0.6s ease-out forwards;
+        }
+        
+        @keyframes splash {
+            0% { transform: scale(0); opacity: 0.8; }
+            100% { transform: scale(3); opacity: 0; }
+        }
+        
+        /* Food counter styles */
+        #food-counter {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            padding: 5px 15px;
+            font-size: 16px;
+            font-weight: bold;
+            color: #2c3e50;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            z-index: 10001;
+            display: none;
+            transition: all 0.3s ease;
+        }
+        
+        .counter-bump {
+            animation: counterBump 0.3s ease-out;
+        }
+        
+        @keyframes counterBump {
+            0% { transform: translateX(-50%) scale(1); }
+            50% { transform: translateX(-50%) scale(1.2); }
+            100% { transform: translateX(-50%) scale(1); }
+        }
+        
+        /* Celebration effect */
+        .celebration {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            z-index: 9996;
+            opacity: 0;
+            animation: celebrate 1s ease-out forwards;
+        }
+        
+        @keyframes celebrate {
+            0% { transform: scale(0) translateY(0); opacity: 1; }
+            100% { transform: scale(1) translateY(-100px); opacity: 0; }
+        }
+        
+        /* Achievement styles */
+        #achievement {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background-color: rgba(44, 62, 80, 0.9);
+            border-radius: 10px;
+            padding: 20px;
+            color: white;
+            text-align: center;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            z-index: 10002;
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        #achievement h3 {
+            margin-top: 0;
+            color: #f1c40f;
+            font-size: 24px;
+        }
+        
+        #achievement p {
+            margin-bottom: 15px;
+        }
+        
+        #achievement-icon {
+            font-size: 50px;
+            margin-bottom: 10px;
+            animation: spin 2s infinite linear;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .achievement-stars {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 10001;
+        }
+        
+        .achievement-star {
+            position: absolute;
+            background-color: #f1c40f;
+            clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+            opacity: 0;
+            animation: star-fade 2s ease-out forwards;
+        }
+        
+        @keyframes star-fade {
+            0% { transform: scale(0) rotate(0deg); opacity: 1; }
+            100% { transform: scale(1) rotate(360deg); opacity: 0; }
+        }
     </style>
 </head>
 <body>
+    <!-- Animation container for falling foods -->
+    <div id="animation-container">
+        <!-- Removed picnic blanket and basket -->
+        <div id="food-counter">Foods collected: 0</div>
+    </div>
+    
+    <!-- Test buttons for food animation (for debugging) -->
+    <div style="position: fixed; top: 10px; left: 10px; z-index: 10002; display: none; flex-direction: column; gap: 5px;">
+        <button id="test-apple" class="test-button" style="padding: 5px; background: #e74c3c; color: white; border: none; border-radius: 4px; cursor: pointer;">Test Apple</button>
+        <button id="test-banana" class="test-button" style="padding: 5px; background: #f1c40f; color: white; border: none; border-radius: 4px; cursor: pointer;">Test Banana</button>
+        <button id="test-chicken" class="test-button" style="padding: 5px; background: #3498db; color: white; border: none; border-radius: 4px; cursor: pointer;">Test Chicken</button>
+    </div>
+    
     <div class="container">
         <div class="app-header">
             <h1>Mike's Amazing Health Tracker</h1>
@@ -532,12 +626,7 @@
                 <input type="date" id="date">
             </div>
             
-            <div class="section-header">
-                <svg class="section-icon" viewBox="0 0 24 24" width="24" height="24">
-                    <path fill="#e74c3c" d="M11,9H13V7H11M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M11,13H13V11H11V13Z" />
-                </svg>
-                <h2>Nutrition</h2>
-            </div>
+            <h2>Nutrition</h2>
             
             <div class="form-group">
                 <label for="calories">Total Calories (kcal):</label>
@@ -547,57 +636,6 @@
             <div class="form-group">
                 <label for="protein">Total Protein (g):</label>
                 <input type="number" id="protein" min="0" value="0">
-            </div>
-            
-            <div class="category-icons">
-                <div class="category-icon">
-                    <svg viewBox="0 0 24 24">
-                        <path fill="#e74c3c" d="M12,3L2,12H5V20H19V12H22L12,3M12,8.5C14.34,8.5 16.46,9.43 18,10.94L16.8,12.12C15.58,10.91 13.88,10.17 12,10.17C10.12,10.17 8.42,10.91 7.2,12.12L6,10.94C7.54,9.43 9.66,8.5 12,8.5M12,11.83C13.4,11.83 14.67,12.39 15.6,13.3L14.4,14.47C13.79,13.87 12.94,13.5 12,13.5C11.06,13.5 10.21,13.87 9.6,14.47L8.4,13.3C9.33,12.39 10.6,11.83 12,11.83M12,15.17C12.94,15.17 13.7,15.91 13.7,16.83C13.7,17.75 12.94,18.5 12,18.5C11.06,18.5 10.3,17.75 10.3,16.83C10.3,15.91 11.06,15.17 12,15.17Z" />
-                    </svg>
-                    <span>Protein</span>
-                </div>
-                <div class="category-icon">
-                    <svg viewBox="0 0 24 24">
-                        <path fill="#f39c12" d="M22,18A4,4 0 0,1 18,22H15A4,4 0 0,1 11,18V16H17.79L20.55,11.23L22.11,12.13L19.87,16H22V18M9,22H2C2,19 2,16 2.33,12.83C2.6,10.3 3.08,7.66 3.6,5H3V3H4L7,3H8V5H7.4C7.92,7.66 8.4,10.3 8.67,12.83C9,16 9,19 9,22Z" />
-                    </svg>
-                    <span>Carbs</span>
-                </div>
-                <div class="category-icon">
-                    <svg viewBox="0 0 24 24">
-                        <path fill="#2ecc71" d="M7,2C4,2 2,5 2,8C2,10.11 3,13 4,14C5,15 6,22 8,22C12.54,22 10,15 12,15C14,15 11.46,22 16,22C18,22 19,15 20,14C21,13 22,10.11 22,8C22,5 20,2 17,2C14,2 13,5 12,5C11,5 10,2 7,2Z" />
-                    </svg>
-                    <span>Fruits</span>
-                </div>
-                <div class="category-icon">
-                    <svg viewBox="0 0 24 24">
-                        <path fill="#27ae60" d="M2,5.27L3.28,4L21,21.72L19.73,23L17.74,21H15.08L16.08,19H14.38L13.38,21H11.68L12.68,19H11L10,21H8.3L9.3,19H8.3L7.3,21H5.6L6.6,19H5.6L4.6,21H3.68L5.5,16.3L2,12.8V5.27M17,8C16.84,8 16.76,8.08 16.76,8.24C16.76,8.4 16.84,8.5 17,8M16.5,11C16.34,11 16.26,11.08 16.26,11.24C16.26,11.4 16.34,11.5 16.5,11.5C16.66,11.5 16.74,11.4 16.74,11.24C16.74,11.08 16.66,11 16.5,11M16,14C15.84,14 15.76,14.08 15.76,14.24C15.76,14.4 15.84,14.5 16,14.5C16.16,14.5 16.24,14.4 16.24,14.24C16.24,14.08 16.16,14 16,14M13,8C12.84,8 12.76,8.08 12.76,8.24C12.76,8.4 12.84,8.5 13,8.5C13.16,8.5 13.24,8.4 13.24,8.24C13.24,8.08 13.16,8 13,8M13.5,11C13.34,11 13.26,11.08 13.26,11.24C13.26,11.4 13.34,11.5 13.5,11.5C13.66,11.5 13.74,11.4 13.74,11.24C13.74,11.08 13.66,11 13.5,11M13,14C12.84,14 12.76,14.08 12.76,14.24C12.76,14.4 12.84,14.5 13,14.5C13.16,14.5 13.24,14.4 13.24,14.24C13.24,14.08 13.16,14 13,14M9.5,8C9.34,8 9.26,8.08 9.26,8.24C9.26,8.4 9.34,8.5 9.5,8.5C9.66,8.5 9.74,8.4 9.74,8.24C9.74,8.08 9.66,8 9.5,8M9.5,11C9.34,11 9.26,11.08 9.26,11.24C9.26,11.4 9.34,11.5 9.5,11.5C9.66,11.5 9.74,11.4 9.74,11.24C9.74,11.08 9.66,11 9.5,11M9.5,14C9.34,14 9.26,14.08 9.26,14.24C9.26,14.4 9.34,14.5 9.5,14.5C9.66,14.5 9.74,14.4 9.74,14.24C9.74,14.08 9.66,14 9.5,14M6,8C5.84,8 5.76,8.08 5.76,8.24C5.76,8.4 5.84,8.5 6,8.5C6.16,8.5 6.24,8.4 6.24,8.24C6.24,8.08 6.16,8 6,8M6.5,11C6.34,11 6.26,11.08 6.26,11.24C6.26,11.4 6.34,11.5 6.5,11.5C6.66,11.5 6.74,11.4 6.74,11.24C6.74,11.08 6.66,11 6.5,11M6.5,14C6.34,14 6.26,14.08 6.26,14.24C6.26,14.4 6.34,14.5 6.5,14.5C6.66,14.5 6.74,14.4 6.74,14.24C6.74,14.08 6.66,14 6.5,14M22,10.5C22,12.5 20.5,14 18.5,14C16.5,14 15,12.5 15,10.5C15,8.5 16.5,7 18.5,7C20.5,7 22,8.5 22,10.5Z" />
-                    </svg>
-                    <span>Veggies</span>
-                </div>
-                <div class="category-icon">
-                    <svg viewBox="0 0 24 24">
-                        <path fill="#3498db" d="M10,2H14A2,2 0 0,1 16,4V6H20A2,2 0 0,1 22,8V13.03C21.5,12.23 20.8,11.54 20,11V8H4V19H10.5C10.81,19.75 11.26,20.42 11.81,21H4C2.89,21 2,20.1 2,19V8C2,6.89 2.89,6 4,6H8V4C8,2.89 8.89,2 10,2M14,6V4H10V6H14M20.31,17.9C20.5,17.95 20.7,18 20.91,18.03C20.71,18.73 20.14,19.28 19.43,19.46C19.03,19.55 18.61,19.5 18.24,19.32C17.85,19.12 17.54,18.8 17.35,18.42C17.15,18.04 17.09,17.6 17.17,17.18C17.26,16.77 17.5,16.41 17.82,16.17C18.13,15.93 18.5,15.81 18.89,15.81C19.28,15.81 19.65,15.93 19.96,16.17C20.26,16.41 20.5,16.77 20.59,17.18C20.43,17.12 20.25,17.1 20.06,17.1C19.5,17.1 18.97,17.39 18.68,17.88C18.39,18.38 18.39,19 18.68,19.5C18.97,19.99 19.5,20.28 20.06,20.28C20.44,20.28 20.81,20.15 21.1,19.92C21.38,19.68 21.57,19.36 21.63,19C21.69,18.64 21.63,18.27 21.46,17.96C21.29,17.65 21.03,17.41 20.71,17.28C20.5,17.19 20.26,17.15 20.04,17.17C20.13,17.37 20.22,17.59 20.31,17.9M20.84,22.73L20.5,22.5C20.34,22.3 20,21.8 19.7,21.4C19.4,21 19.08,20.33 18.75,19.67L19.03,19.5C19.17,19.5 19.53,20.33 19.83,20.83C20.13,21.33 20.41,21.67 20.5,21.67L20.84,22.73Z" />
-                    </svg>
-                    <span>Dairy</span>
-                </div>
-                <div class="category-icon">
-                    <svg viewBox="0 0 24 24">
-                        <path fill="#9b59b6" d="M14,2A8,8 0 0,0 6,10A8,8 0 0,0 14,18A8,8 0 0,0 22,10A8,8 0 0,0 14,2M4.93,5.82C3.08,7.34 2,9.61 2,12A8,8 0 0,0 10,20C10.64,20 11.27,19.92 11.88,19.77C10.12,19.38 8.5,18.5 7.17,17.29C5.22,16.25 4,14.21 4,12C4,11.7 4.03,11.41 4.07,11.11C4.03,10.74 4,10.37 4,10C4,8.56 4.32,7.13 4.93,5.82Z" />
-                    </svg>
-                    <span>Fats</span>
-                </div>
-                <div class="category-icon">
-                    <svg viewBox="0 0 24 24">
-                        <path fill="#e84393" d="M12,2C14.21,2 16,3.79 16,6H8C8,3.79 9.79,2 12,2M16,8H14V10H10V8H8V10C8,12.86 9.5,15.5 12,17.93C14.5,15.5 16,12.86 16,10V8Z" />
-                    </svg>
-                    <span>Sweets</span>
-                </div>
-                <div class="category-icon">
-                    <svg viewBox="0 0 24 24">
-                        <path fill="#00cec9" d="M10,4H14V6H10V4M10,7H14V8H10V7M10,9H14V10H10V9M18,2H6V1H18V2M19,20V22H5V20H19M6,11H18V3H6V11M8,5H16V9H8V5Z" />
-                    </svg>
-                    <span>Drinks</span>
-                </div>
             </div>
             
             <h3>Food Items</h3>
@@ -635,55 +673,11 @@
             
             <button id="add-food-btn" class="add-item-btn">Add Food Item</button>
             
-            <div class="section-header">
-                <svg class="section-icon" viewBox="0 0 24 24" width="24" height="24">
-                    <path fill="#3498db" d="M20.57,14.86L22,13.43L20.57,12L17,15.57L8.43,7L12,3.43L10.57,2L9.14,3.43L7.71,2L5.57,4.14L4.14,2.71L2.71,4.14L4.14,5.57L2,7.71L3.43,9.14L2,10.57L3.43,12L7,8.43L15.57,17L12,20.57L13.43,22L14.86,20.57L16.29,22L18.43,19.86L19.86,21.29L21.29,19.86L19.86,18.43L22,16.29L20.57,14.86Z" />
-                </svg>
-                <h2>Exercise</h2>
-            </div>
+            <h2>Exercise</h2>
             
             <div class="form-group">
                 <label for="exercise">Total Exercise (minutes):</label>
                 <input type="number" id="exercise" min="0" value="0">
-            </div>
-            
-            <div class="category-icons">
-                <div class="category-icon">
-                    <svg viewBox="0 0 24 24">
-                        <path fill="#e74c3c" d="M12,5.5A2.5,2.5 0 0,1 14.5,8A2.5,2.5 0 0,1 12,10.5A2.5,2.5 0 0,1 9.5,8A2.5,2.5 0 0,1 12,5.5M12,2A6,6 0 0,1 18,8C18,11.5 12,19 12,19C12,19 6,11.5 6,8A6,6 0 0,1 12,2M12,4A4,4 0 0,0 8,8C8,9.96 10.23,14.38 12,16.84C13.77,14.38 16,9.96 16,8A4,4 0 0,0 12,4M12,6.75A1.25,1.25 0 0,1 13.25,8A1.25,1.25 0 0,1 12,9.25A1.25,1.25 0 0,1 10.75,8A1.25,1.25 0 0,1 12,6.75Z" />
-                    </svg>
-                    <span>Cardio</span>
-                </div>
-                <div class="category-icon">
-                    <svg viewBox="0 0 24 24">
-                        <path fill="#3498db" d="M12,5A3.5,3.5 0 0,0 8.5,8.5A3.5,3.5 0 0,0 12,12A3.5,3.5 0 0,0 15.5,8.5A3.5,3.5 0 0,0 12,5M12,7A1.5,1.5 0 0,1 13.5,8.5A1.5,1.5 0 0,1 12,10A1.5,1.5 0 0,1 10.5,8.5A1.5,1.5 0 0,1 12,7M5.5,8A2.5,2.5 0 0,0 3,10.5C3,11.44 3.53,12.25 4.29,12.68C4.65,12.88 5.06,13 5.5,13C5.94,13 6.35,12.88 6.71,12.68C7.08,12.47 7.39,12.17 7.62,11.81C6.89,10.86 6.5,9.7 6.5,8.5C6.5,8.41 6.5,8.31 6.5,8.22C6.2,8.08 5.86,8 5.5,8M18.5,8C18.14,8 17.8,8.08 17.5,8.22C17.5,8.31 17.5,8.41 17.5,8.5C17.5,9.7 17.11,10.86 16.38,11.81C16.5,12 16.63,12.15 16.78,12.3C16.94,12.45 17.1,12.58 17.29,12.68C17.65,12.88 18.06,13 18.5,13C18.94,13 19.35,12.88 19.71,12.68C20.47,12.25 21,11.44 21,10.5A2.5,2.5 0 0,0 18.5,8M12,14C9.66,14 5,15.17 5,17.5V19H19V17.5C19,15.17 14.34,14 12,14M4.71,14.55C2.78,14.78 0,15.76 0,17.5V19H3V17.07C3,16.06 3.69,15.22 4.71,14.55M19.29,14.55C20.31,15.22 21,16.06 21,17.07V19H24V17.5C24,15.76 21.22,14.78 19.29,14.55M12,16C13.53,16 15.24,16.5 16.23,17H7.77C8.76,16.5 10.47,16 12,16Z" />
-                    </svg>
-                    <span>Strength</span>
-                </div>
-                <div class="category-icon">
-                    <svg viewBox="0 0 24 24">
-                        <path fill="#2ecc71" d="M12.5,3.5L11,2L9.5,3.5L6.5,2.5L5,4L7,6L5.5,9.5L2,11.5L3,13.5L6.5,13L9,15.5L8,19L10,21L12.5,16.5L15,21L17,19L16,15.5L18.5,13L22,13.5L23,11.5L19.5,9.5L18,6L20,4L18.5,2.5L15.5,3.5L14,2L12.5,3.5M12,7A2,2 0 0,1 14,9A2,2 0 0,1 12,11A2,2 0 0,1 10,9A2,2 0 0,1 12,7Z" />
-                    </svg>
-                    <span>Flexibility</span>
-                </div>
-                <div class="category-icon">
-                    <svg viewBox="0 0 24 24">
-                        <path fill="#f39c12" d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,3C13.76,3 15.4,3.53 16.78,4.41L16.5,5H13L12,5L10.28,4.16L10.63,3.13C11.08,3.05 11.53,3 12,3M9.53,3.38L9.19,4.41L6.63,5.69L5.38,5.94C6.5,4.73 7.92,3.84 9.53,3.38M13,6H16L18.69,9.59L17.44,12.16L14.81,12.78L11.53,8.94L13,6M6.16,6.66L7,10L5.78,13.06L3.22,13.94C3.08,13.31 3,12.67 3,12C3,10.1 3.59,8.36 4.59,6.91L6.16,6.66M20.56,9.22C20.85,10.09 21,11.03 21,12C21,13.44 20.63,14.79 20,16H18L15.91,13.5L17.13,11.03L20.56,9.22M8,10H11L13.81,13.28L12.19,15.54L8.13,16.97L5.25,13.5L8,10M12.84,16.7L14.56,19.78C13.78,20.53 12.78,21.06 11.68,21.3L10.72,20.97L7.66,18.5L12.84,16.7M15.03,19.78L15.97,18.5L18.38,17.5L18.38,17.5L19.56,17.13C18.88,18.23 17.94,19.16 16.81,19.78L15.03,19.78Z" />
-                    </svg>
-                    <span>Sports</span>
-                </div>
-                <div class="category-icon">
-                    <svg viewBox="0 0 24 24">
-                        <path fill="#9b59b6" d="M13,14H11V10H13M13,18H11V16H13M1,21H23L12,2L1,21Z" />
-                    </svg>
-                    <span>Walking</span>
-                </div>
-                <div class="category-icon">
-                    <svg viewBox="0 0 24 24">
-                        <path fill="#7f8c8d" d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z" />
-                    </svg>
-                    <span>Other</span>
-                </div>
             </div>
             
             <h3>Exercise Activities</h3>
@@ -713,13 +707,7 @@
             
             <button id="add-exercise-btn" class="add-item-btn">Add Exercise Activity</button>
             
-            <div class="section-header">
-                <svg class="section-icon" viewBox="0 0 24 24" width="24" height="24">
-                    <path fill="#f39c12" d="M20,2H4A2,2 0 0,0 2,4V22L6,18H20A2,2 0 0,0 22,16V4A2,2 0 0,0 20,2M6,9H18V11H6M14,14H6V12H14M18,8H6V6H18" />
-                </svg>
-                <h2>Notes</h2>
-            </div>
-            
+            <h2>Notes</h2>
             <div class="form-group">
                 <label for="notes">Additional Notes:</label>
                 <textarea id="notes" placeholder="Any additional notes about your day..."></textarea>
@@ -768,11 +756,6 @@
             </div>
         </div>
     </div>
-    
-    <footer class="app-footer">
-        <p>Mike's Amazing Health Tracker &copy; 2023</p>
-        <p class="footer-tagline">Track your health journey with ease</p>
-    </footer>
     
     <script>
         // Set default date to today
@@ -1639,6 +1622,477 @@
             const day = String(date.getDate()).padStart(2, '0');
             return `${year}-${month}-${day}`;
         }
+        
+        // Food animation functionality
+        const foodImages = {
+            "chicken": "https://cdn-icons-png.flaticon.com/512/1046/1046751.png",
+            "apple": "https://cdn-icons-png.flaticon.com/512/415/415682.png",
+            "banana": "https://cdn-icons-png.flaticon.com/512/2909/2909761.png",
+            "beef": "https://cdn-icons-png.flaticon.com/512/3143/3143643.png",
+            "eggs": "https://cdn-icons-png.flaticon.com/512/837/837560.png",
+            "avacado": "https://cdn-icons-png.flaticon.com/512/1147/1147801.png", 
+            "avocado": "https://cdn-icons-png.flaticon.com/512/1147/1147801.png", // Added both spellings
+            "bread": "https://cdn-icons-png.flaticon.com/512/3014/3014466.png",
+            "brocolli": "https://cdn-icons-png.flaticon.com/512/2909/2909815.png",
+            "broccoli": "https://cdn-icons-png.flaticon.com/512/2909/2909815.png", // Added both spellings
+            "ice cream": "https://cdn-icons-png.flaticon.com/512/3157/3157890.png"
+        };
+        
+        // Track recently dropped foods to prevent duplicates
+        const recentlyDropped = {};
+        
+        // Food counter
+        let foodCount = 0;
+        let counterVisible = false;
+        let counterTimeout;
+        
+        // Track collected food types
+        const collectedFoodTypes = {};
+        
+        function updateFoodCounter() {
+            const counter = document.getElementById('food-counter');
+            counter.textContent = `Foods collected: ${foodCount}`;
+            
+            // Show counter if not visible
+            if (!counterVisible) {
+                counter.style.display = 'block';
+                counterVisible = true;
+            }
+            
+            // Add bump animation
+            counter.classList.add('counter-bump');
+            setTimeout(() => counter.classList.remove('counter-bump'), 300);
+            
+            // Clear previous timeout and set new one
+            clearTimeout(counterTimeout);
+            counterTimeout = setTimeout(() => {
+                counter.style.opacity = '0';
+                setTimeout(() => {
+                    counter.style.display = 'none';
+                    counter.style.opacity = '1';
+                    counterVisible = false;
+                }, 300);
+            }, 5000);
+            
+            // Create celebration effect for milestones
+            if (foodCount % 5 === 0) {
+                createCelebration();
+            }
+            
+            // Check if all food types have been collected
+            checkAllFoodsCollected();
+        }
+        
+        function checkAllFoodsCollected() {
+            // Get unique food types (accounting for spelling variations)
+            const uniqueFoodTypes = new Set();
+            Object.keys(foodImages).forEach(food => {
+                // Skip alternate spellings
+                if (food === "avocado" && collectedFoodTypes["avacado"]) return;
+                if (food === "avacado" && collectedFoodTypes["avocado"]) return;
+                if (food === "broccoli" && collectedFoodTypes["brocolli"]) return;
+                if (food === "brocolli" && collectedFoodTypes["broccoli"]) return;
+                
+                if (collectedFoodTypes[food]) {
+                    uniqueFoodTypes.add(food.replace("avacado", "avocado").replace("brocolli", "broccoli"));
+                }
+            });
+            
+            // Count unique food types (excluding spelling variations)
+            const uniqueFoodCount = uniqueFoodTypes.size;
+            const totalUniqueFoods = new Set(
+                Object.keys(foodImages).map(f => 
+                    f.replace("avacado", "avocado").replace("brocolli", "broccoli")
+                )
+            ).size;
+            
+            // If all food types collected, show achievement
+            if (uniqueFoodCount >= totalUniqueFoods) {
+                showAchievement();
+            }
+        }
+        
+        function createCelebration() {
+            const container = document.getElementById('animation-container');
+            
+            // Create 20 celebration particles
+            for (let i = 0; i < 20; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('celebration');
+                
+                // Random position at the bottom of the screen
+                const randomX = Math.random() * window.innerWidth;
+                const randomY = window.innerHeight - Math.random() * 50;
+                
+                // Random color
+                const colors = ['#e74c3c', '#3498db', '#2ecc71', '#f1c40f', '#9b59b6'];
+                const randomColor = colors[Math.floor(Math.random() * colors.length)];
+                
+                particle.style.left = `${randomX}px`;
+                particle.style.top = `${randomY}px`;
+                particle.style.backgroundColor = randomColor;
+                
+                // Random size
+                const size = 5 + Math.random() * 10;
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                
+                // Random animation duration
+                const duration = 0.5 + Math.random() * 1;
+                particle.style.animationDuration = `${duration}s`;
+                
+                container.appendChild(particle);
+                
+                // Remove after animation
+                setTimeout(() => {
+                    container.removeChild(particle);
+                }, duration * 1000);
+            }
+            
+            // Play celebration sound
+            const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2005/2005-preview.mp3');
+            audio.volume = 0.3;
+            audio.play().catch(e => console.log("Audio play prevented:", e));
+        }
+        
+        function showAchievement() {
+            // Check if achievement already shown
+            if (document.getElementById('achievement')) return;
+            
+            // Create achievement element
+            const achievement = document.createElement('div');
+            achievement.id = 'achievement';
+            achievement.innerHTML = `
+                <div id="achievement-icon">🏆</div>
+                <h3>ACHIEVEMENT UNLOCKED!</h3>
+                <p>Master Chef: Collected all food types!</p>
+                <button id="achievement-close" style="padding: 5px 15px; background-color: #f1c40f; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">AWESOME!</button>
+            `;
+            
+            document.body.appendChild(achievement);
+            
+            // Create star background
+            const stars = document.createElement('div');
+            stars.classList.add('achievement-stars');
+            document.body.appendChild(stars);
+            
+            // Create 50 stars
+            for (let i = 0; i < 50; i++) {
+                setTimeout(() => {
+                    const star = document.createElement('div');
+                    star.classList.add('achievement-star');
+                    
+                    // Random position
+                    const randomX = Math.random() * window.innerWidth;
+                    const randomY = Math.random() * window.innerHeight;
+                    
+                    // Random size
+                    const size = 10 + Math.random() * 20;
+                    
+                    star.style.left = `${randomX}px`;
+                    star.style.top = `${randomY}px`;
+                    star.style.width = `${size}px`;
+                    star.style.height = `${size}px`;
+                    
+                    stars.appendChild(star);
+                    
+                    // Remove after animation
+                    setTimeout(() => {
+                        stars.removeChild(star);
+                    }, 2000);
+                }, i * 100);
+            }
+            
+            // Show achievement with animation
+            setTimeout(() => {
+                achievement.style.transform = 'translate(-50%, -50%) scale(1)';
+            }, 100);
+            
+            // Play achievement sound
+            const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/1010/1010-preview.mp3');
+            audio.volume = 0.4;
+            audio.play().catch(e => console.log("Audio play prevented:", e));
+            
+            // Close button
+            setTimeout(() => {
+                document.getElementById('achievement-close').addEventListener('click', () => {
+                    achievement.style.transform = 'translate(-50%, -50%) scale(0)';
+                    setTimeout(() => {
+                        document.body.removeChild(achievement);
+                        document.body.removeChild(stars);
+                    }, 500);
+                });
+            }, 500);
+        }
+        
+        function createFallingFood(foodType) {
+            console.log("Creating falling food:", foodType);
+            
+            // Prevent duplicate drops of the same food within 1 second
+            if (recentlyDropped[foodType]) {
+                console.log("Skipping duplicate drop of:", foodType);
+                return;
+            }
+            recentlyDropped[foodType] = true;
+            setTimeout(() => { recentlyDropped[foodType] = false; }, 1000);
+            
+            const container = document.getElementById('animation-container');
+            if (!container) {
+                console.error("Animation container not found!");
+                return;
+            }
+            
+            // Create food element
+            const foodImg = document.createElement('img');
+            foodImg.src = foodImages[foodType.toLowerCase()];
+            console.log("Food image source:", foodImg.src);
+            foodImg.classList.add('falling-food');
+            foodImg.alt = foodType;
+            
+            // Get viewport dimensions - use this instead of window.innerWidth for better mobile support
+            const viewportWidth = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
+            const viewportHeight = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0);
+            
+            // Random horizontal position across the whole screen - adjusted for viewport
+            const randomX = Math.random() * (viewportWidth - 80) + 40; // Keep away from edges on mobile
+            const randomRotation = Math.random() * 360;
+            foodImg.style.left = `${randomX}px`;
+            
+            // Add to container
+            container.appendChild(foodImg);
+            console.log("Food element added to container");
+            
+            // Start animation after a small delay
+            setTimeout(() => {
+                // Calculate final position at the bottom of the screen - adjusted for viewport
+                const finalY = viewportHeight - 40; // 40px from bottom for mobile
+                
+                console.log("Animation parameters:", { randomX, finalY });
+                
+                // Apply animation
+                foodImg.style.transform = `translateY(${finalY}px) rotate(${randomRotation}deg)`;
+                console.log("Applied transform:", foodImg.style.transform);
+                
+                // Create splash and celebration effect when food lands
+                setTimeout(() => {
+                    // Increment food counter
+                    foodCount++;
+                    
+                    // Mark this food type as collected
+                    collectedFoodTypes[foodType] = true;
+                    
+                    updateFoodCounter();
+                    
+                    // Create splash effect
+                    const splash = document.createElement('div');
+                    splash.classList.add('splash');
+                    splash.style.left = `${randomX}px`;
+                    splash.style.bottom = `30px`; // Fixed position from bottom
+                    container.appendChild(splash);
+                    
+                    // Play a soft landing sound - only if not mobile or if user has interacted
+                    const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3');
+                    audio.volume = 0.2;
+                    
+                    // Check if we can play audio (many mobile browsers block autoplay)
+                    if (window.navigator.userActivation && window.navigator.userActivation.hasBeenActive) {
+                        audio.play().catch(e => console.log("Audio play prevented:", e));
+                    
+                        console.log("Audio autoplay may be blocked on mobile");
+                    }
+                    
+                    // Remove splash after animation
+                    setTimeout(() => container.removeChild(splash), 600);
+                    
+                    // Remove food after landing
+                    setTimeout(() => {
+                        foodImg.style.transition = 'opacity 0.5s ease-out, transform 0.5s ease-out';
+                        foodImg.style.opacity = 0;
+                        foodImg.style.transform = `translateY(${finalY + 10}px) rotate(${randomRotation}deg) scale(0.8)`;
+                        
+                        setTimeout(() => {
+                            container.removeChild(foodImg);
+                        }, 500);
+                    }, 200);
+                }, 2500);
+            }, 50);
+        }
+        
+        // Reset food counter when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log("DOM loaded, initializing food animation feature");
+            foodCount = 0;
+            
+            // Reset collected food types
+            Object.keys(foodImages).forEach(food => {
+                collectedFoodTypes[food] = false;
+            });
+            
+            // Hook into the food input field
+            const foodInput = document.getElementById('food-name');
+            console.log("Food input element:", foodInput);
+            
+            if (foodInput) {
+                // Function to check for food keywords in input
+                function checkForFoods(inputValue) {
+                    console.log("Checking for foods in:", inputValue);
+                    const value = inputValue.toLowerCase().trim();
+                    
+                    // Check for exact matches first
+                    Object.keys(foodImages).forEach(food => {
+                        const foodLower = food.toLowerCase();
+                        
+                        // Check if the input exactly matches a food
+                        if (value === foodLower) {
+                            console.log("Exact match found for:", food);
+                            createFallingFood(food);
+                            return;
+                        }
+                        
+                        // Check if the input contains the food as a whole word
+                        const regex = new RegExp(`\\b${foodLower}\\b`, 'i');
+                        if (regex.test(value)) {
+                            createFallingFood(food);
+                            return;
+                        }
+                        
+                        // Check if the input ends with the food
+                        if (value.endsWith(foodLower) && 
+                            (value.length === foodLower.length || value[value.length - foodLower.length - 1] === ' ')) {
+                            createFallingFood(food);
+                            return;
+                        }
+                        
+                        // Check if the input starts with the food
+                        if (value.startsWith(foodLower) && 
+                            (value.length === foodLower.length || value[foodLower.length] === ' ')) {
+                            createFallingFood(food);
+                            return;
+                        }
+                    });
+                }
+                
+                // Add input event listener with debounce
+                let inputTimeout;
+                foodInput.addEventListener('input', function(e) {
+                    clearTimeout(inputTimeout);
+                    inputTimeout = setTimeout(() => {
+                        checkForFoods(e.target.value);
+                    }, 300); // 300ms debounce
+                });
+                
+                // Also check on blur to catch final entry
+                foodInput.addEventListener('blur', function(e) {
+                    checkForFoods(e.target.value);
+                });
+                
+                // Add a small tooltip to hint at the feature
+                const tooltip = document.createElement('div');
+                tooltip.style.fontSize = '12px';
+                tooltip.style.color = '#7f8c8d';
+                tooltip.style.marginTop = '5px';
+                tooltip.style.fontStyle = 'italic';
+                tooltip.textContent = 'Try typing foods like "chicken", "apple", or "banana"...';
+                
+                // Insert tooltip after the food input
+                foodInput.parentNode.insertBefore(tooltip, foodInput.nextSibling);
+                
+                // Hide tooltip after 10 seconds
+                setTimeout(() => {
+                    tooltip.style.transition = 'opacity 1s ease';
+                    tooltip.style.opacity = '0';
+                    setTimeout(() => tooltip.remove(), 1000);
+                }, 10000);
+            } else {
+                console.error("Food input element not found! Expected element with id 'food-name'");
+            }
+            
+            // Add test buttons for direct animation testing
+            const testApple = document.getElementById('test-apple');
+            const testBanana = document.getElementById('test-banana');
+            const testChicken = document.getElementById('test-chicken');
+            
+            // Helper function to add both click and touch events
+            function addTouchAndClickEvent(element, handler) {
+                if (!element) return;
+                
+                // Add click event
+                element.addEventListener('click', handler);
+                
+                // Add touch events for mobile
+                element.addEventListener('touchstart', function(e) {
+                    e.preventDefault(); // Prevent default touch behavior
+                    handler(e);
+                });
+            }
+            
+            // Add events to test buttons
+            addTouchAndClickEvent(testApple, function() {
+                console.log("Test apple button activated");
+                createFallingFood('apple');
+            });
+            
+            addTouchAndClickEvent(testBanana, function() {
+                console.log("Test banana button activated");
+                createFallingFood('banana');
+            });
+            
+            addTouchAndClickEvent(testChicken, function() {
+                console.log("Test chicken button activated");
+                createFallingFood('chicken');
+            });
+            
+            console.log("Test buttons initialized with touch support");
+            
+            // Add a reset button for the food counter but make it hidden
+            const resetButton = document.createElement('button');
+            resetButton.textContent = 'Reset Food Counter';
+            resetButton.style.position = 'fixed';
+            resetButton.style.bottom = '20px';
+            resetButton.style.right = '20px';
+            resetButton.style.padding = '5px 10px';
+            resetButton.style.backgroundColor = '#e74c3c';
+            resetButton.style.color = 'white';
+            resetButton.style.border = 'none';
+            resetButton.style.borderRadius = '4px';
+            resetButton.style.cursor = 'pointer';
+            resetButton.style.fontSize = '12px';
+            resetButton.style.zIndex = '10001';
+            resetButton.style.opacity = '0'; /* Hide the button */
+            resetButton.style.pointerEvents = 'none'; /* Disable interactions */
+            resetButton.style.transition = 'opacity 0.3s ease';
+            
+            // Add both touch and click events to the reset button
+            addTouchAndClickEvent(resetButton, () => {
+                foodCount = 0;
+                updateFoodCounter();
+                
+                // Show a quick message
+                const message = document.createElement('div');
+                message.textContent = 'Counter reset!';
+                message.style.position = 'fixed';
+                message.style.bottom = '60px';
+                message.style.right = '20px';
+                message.style.padding = '5px 10px';
+                message.style.backgroundColor = 'rgba(0,0,0,0.7)';
+                message.style.color = 'white';
+                message.style.borderRadius = '4px';
+                message.style.fontSize = '12px';
+                message.style.zIndex = '10002';
+                
+                document.body.appendChild(message);
+                
+                setTimeout(() => {
+                    message.style.transition = 'opacity 0.5s ease';
+                    message.style.opacity = '0';
+                    setTimeout(() => message.remove(), 500);
+                }, 1500);
+            });
+            
+            document.body.appendChild(resetButton);
+        });
+        
+        // ... existing script continues ...
     </script>
 </body>
 </html> 

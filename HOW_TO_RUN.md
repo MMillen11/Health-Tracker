@@ -9,7 +9,12 @@ If you're experiencing issues with the main application, try using the simplifie
 1. Open the `simple.html` file in your browser
 2. This version has all code in a single file and should work without any issues
 
-## Method 1: Using a Local Web Server (Recommended)
+## Method 1: Direct File Opening (Simplest)
+
+1. Open the `index.html` file in your browser
+2. The application should load and be ready to use
+
+## Method 2: Using a Local Web Server (Recommended)
 
 The most reliable way to run web applications is using a local web server. Here are a few options:
 
@@ -36,7 +41,7 @@ The most reliable way to run web applications is using a local web server. Here 
 2. Install the "Live Server" extension
 3. Right-click on `index.html` and select "Open with Live Server"
 
-## Method 2: Opening the HTML File Directly
+## Method 3: Opening the HTML File Directly
 
 If you can't use a local server, you can try opening the HTML file directly:
 
@@ -45,6 +50,31 @@ If you can't use a local server, you can try opening the HTML file directly:
 3. If the application doesn't load properly, try using the simple.html file instead
 
 ## Troubleshooting
+
+### CORS Issues
+If you see errors in the console related to CORS (Cross-Origin Resource Sharing):
+
+- Solution: Use a local web server (Method 2 or 3)
+- Or: Make sure you're opening the file directly, not through a file:// URL
+
+### Chart.js Not Loading
+If the charts don't appear:
+
+- Solution: Make sure you have an internet connection (Chart.js is loaded from a CDN)
+- Or: Use a local web server (Method 2 or 3)
+
+### Data Not Saving
+If your data isn't being saved between sessions:
+
+- Solution: Make sure you're using a modern browser that supports localStorage
+- Or: Check if your browser has privacy settings that block localStorage
+
+### Other Issues
+If you encounter any other issues:
+
+- Try using a different browser
+- Make sure all files (index.html, styles.css, and app.js) are in the same folder
+- Check the browser console for specific error messages
 
 ### Common Errors
 

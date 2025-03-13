@@ -15,13 +15,16 @@ A simple health tracker application that can be run by simply opening the index.
 
 1. Download or clone this repository
 2. Open the `index.html` file in your web browser
-3. That's it! The application will load and run directly in your browser
+3. Start tracking your health data!
+
+For more detailed instructions, see the [HOW_TO_RUN.md](HOW_TO_RUN.md) file.
 
 ## Project Structure
 
 - `index.html` - The main HTML file that serves as the entry point
-- `styles.css` - Contains all the styling for the application
-- `app.js` - Contains the JavaScript code that powers the application
+- `chart.html` - A standalone page for viewing nutrition charts
+- `styles.css` - Contains additional styles for the application
+- `app.js` - Contains additional JavaScript functionality
 
 ## How to Use
 
