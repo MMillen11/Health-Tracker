@@ -1635,7 +1635,14 @@
             "bread": "https://cdn-icons-png.flaticon.com/512/3014/3014466.png",
             "brocolli": "https://cdn-icons-png.flaticon.com/512/2909/2909815.png",
             "broccoli": "https://cdn-icons-png.flaticon.com/512/2909/2909815.png", // Added both spellings
-            "ice cream": "https://cdn-icons-png.flaticon.com/512/3157/3157890.png"
+            "ice cream": "https://cdn-icons-png.flaticon.com/512/3157/3157890.png",
+            // New food items
+            "grapes": "https://cdn-icons-png.flaticon.com/512/2909/2909787.png",
+            "popcorn": "https://cdn-icons-png.flaticon.com/512/2674/2674065.png",
+            "pineapple": "https://cdn-icons-png.flaticon.com/512/2909/2909808.png",
+            "protein bar": "https://cdn-icons-png.flaticon.com/512/2553/2553651.png",
+            "smoothie": "https://cdn-icons-png.flaticon.com/512/3081/3081887.png",
+            "blueberries": "https://cdn-icons-png.flaticon.com/512/6866/6866569.png"
         };
         
         // Track recently dropped foods to prevent duplicates
@@ -1933,6 +1940,9 @@
             console.log("Food input element:", foodInput);
             
             if (foodInput) {
+                // Store the last detected food to prevent continuous drops of the same food
+                let lastDetectedFood = '';
+                
                 // Function to check for food keywords in input
                 function checkForFoods(inputValue) {
                     console.log("Checking for foods in:", inputValue);
@@ -1941,35 +1951,53 @@
                     // Check for exact matches first
                     Object.keys(foodImages).forEach(food => {
                         const foodLower = food.toLowerCase();
+                        let foodDetected = false;
                         
                         // Check if the input exactly matches a food
                         if (value === foodLower) {
                             console.log("Exact match found for:", food);
-                            createFallingFood(food);
-                            return;
+                            foodDetected = true;
                         }
                         
                         // Check if the input contains the food as a whole word
                         const regex = new RegExp(`\\b${foodLower}\\b`, 'i');
                         if (regex.test(value)) {
-                            createFallingFood(food);
-                            return;
+                            foodDetected = true;
                         }
                         
                         // Check if the input ends with the food
                         if (value.endsWith(foodLower) && 
                             (value.length === foodLower.length || value[value.length - foodLower.length - 1] === ' ')) {
-                            createFallingFood(food);
-                            return;
+                            foodDetected = true;
                         }
                         
                         // Check if the input starts with the food
                         if (value.startsWith(foodLower) && 
                             (value.length === foodLower.length || value[foodLower.length] === ' ')) {
-                            createFallingFood(food);
+                            foodDetected = true;
+                        }
+                        
+                        // If food is detected and it's different from the last detected food
+                        if (foodDetected && food !== lastDetectedFood) {
+                            // Update the last detected food
+                            lastDetectedFood = food;
+                            
+                            // Drop 3 of the same food items at once
+                            for (let i = 0; i < 3; i++) {
+                                // Add a small delay between each drop to make them visually distinct
+                                setTimeout(() => {
+                                    createFallingFood(food);
+                                }, i * 150);
+                            }
                             return;
                         }
                     });
+                    
+                    // If we reach here and the input is empty or significantly different,
+                    // reset the lastDetectedFood to allow new drops
+                    if (value === '' || (lastDetectedFood && !value.includes(lastDetectedFood.toLowerCase()))) {
+                        lastDetectedFood = '';
+                    }
                 }
                 
                 // Add input event listener with debounce
@@ -1992,7 +2020,7 @@
                 tooltip.style.color = '#7f8c8d';
                 tooltip.style.marginTop = '5px';
                 tooltip.style.fontStyle = 'italic';
-                tooltip.textContent = 'Try typing foods like "chicken", "apple", or "banana"...';
+                tooltip.textContent = 'Try typing foods like "chicken", "apple", "grapes", or "smoothie"...';
                 
                 // Insert tooltip after the food input
                 foodInput.parentNode.insertBefore(tooltip, foodInput.nextSibling);
@@ -2029,17 +2057,32 @@
             // Add events to test buttons
             addTouchAndClickEvent(testApple, function() {
                 console.log("Test apple button activated");
-                createFallingFood('apple');
+                // Drop 3 apples at once
+                for (let i = 0; i < 3; i++) {
+                    setTimeout(() => {
+                        createFallingFood('apple');
+                    }, i * 150);
+                }
             });
             
             addTouchAndClickEvent(testBanana, function() {
                 console.log("Test banana button activated");
-                createFallingFood('banana');
+                // Drop 3 bananas at once
+                for (let i = 0; i < 3; i++) {
+                    setTimeout(() => {
+                        createFallingFood('banana');
+                    }, i * 150);
+                }
             });
             
             addTouchAndClickEvent(testChicken, function() {
                 console.log("Test chicken button activated");
-                createFallingFood('chicken');
+                // Drop 3 chicken at once
+                for (let i = 0; i < 3; i++) {
+                    setTimeout(() => {
+                        createFallingFood('chicken');
+                    }, i * 150);
+                }
             });
             
             console.log("Test buttons initialized with touch support");
