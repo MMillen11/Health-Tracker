@@ -425,9 +425,15 @@
             object-fit: contain;
             z-index: 10000;
             transform: translateY(-100px) rotate(0deg);
-            transition: transform 2.5s cubic-bezier(0.21, 0.98, 0.6, 0.99);
             filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.3));
         }
+        
+        /* Override any animations */
+        .falling-food::before {
+            animation: none !important;
+        }
+        
+        /* Removed unused animations */
         
         /* Responsive adjustments for mobile */
         @media (max-width: 768px) {
@@ -713,7 +719,7 @@
                 <textarea id="notes" placeholder="Any additional notes about your day..."></textarea>
             </div>
             
-            <button id="save-btn">Save Daily Entry</button>
+            <button id="save-btn">Save Daily Entry & Clear Form</button>
         </div>
         
         <div class="tab-content" id="history-tab">
@@ -832,6 +838,13 @@
         // Food items array
         let foodItems = [];
         
+        // Function to reset the food counter
+        function resetFoodCounter() {
+            foodCount = 0;
+            updateFoodCounterDisplay();
+            console.log("Food counter reset");
+        }
+        
         // Add food item button click handler
         document.getElementById('add-food-btn').addEventListener('click', function() {
             const foodName = document.getElementById('food-name').value.trim();
@@ -858,6 +871,17 @@
             // Update total calories and protein
             updateTotalCalories();
             updateTotalProtein();
+            
+            // Try to create a falling food animation for this food
+            // Check if we have an image for this food
+            const foodLower = foodName.toLowerCase();
+            for (const [key, url] of Object.entries(foodImages)) {
+                if (foodLower.includes(key.toLowerCase())) {
+                    // Create falling food animation
+                    createFallingFood(key);
+                    break;
+                }
+            }
             
             // Clear inputs
             document.getElementById('food-name').value = '';
@@ -1048,15 +1072,32 @@
             // Get existing data from localStorage or initialize empty object
             let healthData = JSON.parse(localStorage.getItem('healthData')) || {};
             
-            // Add new entry
-            healthData[date] = {
-                calories: parseInt(calories),
-                protein: parseFloat(protein),
-                exercise: parseInt(exercise),
-                foodItems: foodItems,
-                exerciseActivities: exerciseActivities,
-                notes: notes
-            };
+            // Check if there's an existing entry for this date
+            const existingEntry = healthData[date];
+            let isUpdate = false;
+            
+            if (existingEntry) {
+                isUpdate = true;
+                // If entry exists, replace food items instead of appending them
+                healthData[date] = {
+                    calories: parseInt(calories),
+                    protein: parseFloat(protein),
+                    exercise: parseInt(exercise),
+                    foodItems: foodItems, // Replace instead of append
+                    exerciseActivities: exerciseActivities, // Replace instead of append
+                    notes: notes
+                };
+            } else {
+                // Add new entry
+                healthData[date] = {
+                    calories: parseInt(calories),
+                    protein: parseFloat(protein),
+                    exercise: parseInt(exercise),
+                    foodItems: foodItems,
+                    exerciseActivities: exerciseActivities,
+                    notes: notes
+                };
+            }
             
             console.log('Saving health data to localStorage:', healthData);
             
@@ -1068,10 +1109,17 @@
             document.getElementById('protein').value = '0';
             document.getElementById('exercise').value = '0';
             document.getElementById('notes').value = '';
-            foodItems = [];
+            
+            // Clear exercise activities
             exerciseActivities = [];
-            updateFoodList([]);
             updateExerciseList([]);
+            
+            // Clear food items to prevent duplication
+            foodItems = [];
+            updateFoodList([]);
+            
+            // Reset the food counter to prevent duplication
+            resetFoodCounter();
             
             // Switch to history tab and update display
             console.log('Switching to history tab...');
@@ -1093,7 +1141,11 @@
                 }, 100);
             }
             
-            alert('Entry saved successfully!');
+            if (isUpdate) {
+                alert(`Entry updated for ${date}! Previous food items have been replaced with the current ones.`);
+            } else {
+                alert(`Entry saved for ${date}! Your food items have been recorded.`);
+            }
         });
         
         // Function to load entry data for editing
@@ -1102,13 +1154,17 @@
             const entry = healthData[date];
             
             if (entry) {
+                // Reset the food counter to prevent duplication
+                resetFoodCounter();
+                
+                // Always replace existing items with the saved entry
                 document.getElementById('date').value = date;
                 document.getElementById('calories').value = entry.calories || 0;
                 document.getElementById('protein').value = entry.protein || 0;
                 document.getElementById('exercise').value = entry.exercise || 0;
                 document.getElementById('notes').value = entry.notes || '';
                 
-                // Load food items
+                // Load food items without triggering food animations
                 foodItems = entry.foodItems || [];
                 // Ensure all food items have protein property
                 foodItems = foodItems.map(item => ({
@@ -1656,6 +1712,20 @@
         // Track collected food types
         const collectedFoodTypes = {};
         
+        // Function to update food counter display
+        function updateFoodCounterDisplay() {
+            const counter = document.getElementById('food-counter');
+            if (counter) {
+                counter.textContent = `Foods collected: ${foodCount}`;
+                
+                // Show counter if not visible
+                if (!counterVisible) {
+                    counter.style.display = 'block';
+                    counterVisible = true;
+                }
+            }
+        }
+        
         function updateFoodCounter() {
             const counter = document.getElementById('food-counter');
             counter.textContent = `Foods collected: ${foodCount}`;
@@ -1676,9 +1746,8 @@
                 counter.style.opacity = '0';
                 setTimeout(() => {
                     counter.style.display = 'none';
-                    counter.style.opacity = '1';
                     counterVisible = false;
-                }, 300);
+                }, 500);
             }, 5000);
             
             // Create celebration effect for milestones
@@ -1863,7 +1932,15 @@
             // Random horizontal position across the whole screen - adjusted for viewport
             const randomX = Math.random() * (viewportWidth - 80) + 40; // Keep away from edges on mobile
             const randomRotation = Math.random() * 360;
-            foodImg.style.left = `${randomX}px`;
+            
+            // Add a slight initial horizontal offset for more natural feather-like motion
+            const initialOffset = (Math.random() * 20) - 10; // Random value between -10 and 10
+            
+            foodImg.style.left = `${randomX + initialOffset}px`;
+            
+            // Add a random animation delay for more natural movement
+            const randomDelay = Math.random() * 0.5; // Random delay between 0 and 0.5 seconds
+            foodImg.style.animationDelay = `${randomDelay}s`;
             
             // Add to container
             container.appendChild(foodImg);
@@ -1876,64 +1953,107 @@
                 
                 console.log("Animation parameters:", { randomX, finalY });
                 
-                // Apply animation
-                foodImg.style.transform = `translateY(${finalY}px) rotate(${randomRotation}deg)`;
-                console.log("Applied transform:", foodImg.style.transform);
+                // Apply animation with a slight rotation for feather-like effect
+                const rotationAmount = Math.random() > 0.5 ? randomRotation : -randomRotation;
                 
-                // Create splash and celebration effect when food lands
-                setTimeout(() => {
-                    // Increment food counter
-                    foodCount++;
+                // Create feather-like falling motion with JavaScript
+                let startTime = null;
+                const duration = 4000; // 4 seconds
+                const amplitude = 30; // Maximum horizontal swing
+                const frequency = 3; // Number of complete swings
+                
+                function animateFeatherFall(timestamp) {
+                    if (!startTime) startTime = timestamp;
+                    const elapsed = timestamp - startTime;
+                    const progress = Math.min(elapsed / duration, 1);
                     
-                    // Mark this food type as collected
-                    collectedFoodTypes[foodType] = true;
+                    // Calculate vertical position
+                    const currentY = -100 + (progress * (finalY + 100));
                     
-                    updateFoodCounter();
+                    // Calculate horizontal swing (sine wave)
+                    const swing = amplitude * Math.sin(progress * Math.PI * frequency) * (1 - progress);
                     
-                    // Create splash effect
-                    const splash = document.createElement('div');
-                    splash.classList.add('splash');
-                    splash.style.left = `${randomX}px`;
-                    splash.style.bottom = `30px`; // Fixed position from bottom
-                    container.appendChild(splash);
+                    // Calculate rotation (gradually increasing)
+                    const currentRotation = rotationAmount * progress;
                     
-                    // Play a soft landing sound - only if not mobile or if user has interacted
-                    const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3');
-                    audio.volume = 0.2;
+                    // Apply the combined transform
+                    foodImg.style.transform = `translateY(${currentY}px) translateX(${swing}px) rotate(${currentRotation}deg)`;
                     
-                    // Check if we can play audio (many mobile browsers block autoplay)
-                    if (window.navigator.userActivation && window.navigator.userActivation.hasBeenActive) {
-                        audio.play().catch(e => console.log("Audio play prevented:", e));
-                    
-                        console.log("Audio autoplay may be blocked on mobile");
-                    }
-                    
-                    // Remove splash after animation
-                    setTimeout(() => container.removeChild(splash), 600);
-                    
-                    // Remove food after landing
-                    setTimeout(() => {
-                        foodImg.style.transition = 'opacity 0.5s ease-out, transform 0.5s ease-out';
-                        foodImg.style.opacity = 0;
-                        foodImg.style.transform = `translateY(${finalY + 10}px) rotate(${randomRotation}deg) scale(0.8)`;
+                    // Continue animation if not complete
+                    if (progress < 1) {
+                        requestAnimationFrame(animateFeatherFall);
+                    } else {
+                        // Animation complete, trigger landing effects
+                        // Increment food counter
+                        foodCount++;
                         
+                        // Mark this food type as collected
+                        collectedFoodTypes[foodType] = true;
+                        
+                        updateFoodCounter();
+                        
+                        // Create splash effect
+                        const splash = document.createElement('div');
+                        splash.classList.add('splash');
+                        
+                        // Get the current computed position of the food item
+                        const foodRect = foodImg.getBoundingClientRect();
+                        const splashX = foodRect.left + (foodRect.width / 2) - 20; // Center the splash
+                        
+                        splash.style.left = `${splashX}px`;
+                        splash.style.bottom = `30px`; // Fixed position from bottom
+                        container.appendChild(splash);
+                        
+                        // Play a soft landing sound - only if not mobile or if user has interacted
+                        const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3');
+                        audio.volume = 0.2;
+                        
+                        // Check if we can play audio (many mobile browsers block autoplay)
+                        if (window.navigator.userActivation && window.navigator.userActivation.hasBeenActive) {
+                            audio.play().catch(e => console.log("Audio play prevented:", e));
+                        } else {
+                            console.log("Audio autoplay may be blocked on mobile");
+                        }
+                        
+                        // Remove splash after animation
+                        setTimeout(() => container.removeChild(splash), 600);
+                        
+                        // Remove food after landing
                         setTimeout(() => {
-                            container.removeChild(foodImg);
-                        }, 500);
-                    }, 200);
-                }, 2500);
+                            foodImg.style.transition = 'opacity 0.5s ease-out, transform 0.5s ease-out';
+                            foodImg.style.opacity = 0;
+                            foodImg.style.transform = `translateY(${finalY + 10}px) translateX(${swing}px) rotate(${rotationAmount}deg) scale(0.8)`;
+                            
+                            setTimeout(() => {
+                                container.removeChild(foodImg);
+                            }, 500);
+                        }, 200);
+                    }
+                }
+                
+                // Start the animation
+                requestAnimationFrame(animateFeatherFall);
+                
             }, 50);
         }
         
         // Reset food counter when page loads
         document.addEventListener('DOMContentLoaded', function() {
             console.log("DOM loaded, initializing food animation feature");
+            // Reset food counter when page loads
             foodCount = 0;
             
-            // Reset collected food types
-            Object.keys(foodImages).forEach(food => {
-                collectedFoodTypes[food] = false;
-            });
+            // Only reset collected food types if they don't exist yet
+            if (!Object.keys(collectedFoodTypes).length) {
+                Object.keys(foodImages).forEach(food => {
+                    collectedFoodTypes[food] = false;
+                });
+            }
+            
+            // Update the food counter display if there are collected foods
+            if (foodCount > 0) {
+                updateFoodCounterDisplay();
+            }
             
             // Hook into the food input field
             const foodInput = document.getElementById('food-name');
